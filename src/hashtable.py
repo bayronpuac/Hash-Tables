@@ -37,6 +37,8 @@ class HashTable:
             print("ERROR: Key in use") 
         else: 
             self.storage[key] = value
+
+            
     def remove(self, key):
         '''
         Remove the value stored with the given key.
