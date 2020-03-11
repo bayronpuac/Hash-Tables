@@ -1,3 +1,15 @@
+
+# '''
+# Linked List hash table key/value pair
+# '''
+class LinkedPair:
+    def __init__(self, key, value):
+        self.key = key
+        self.value = value
+        self.next = None
+    def __str__(self):
+        return (f"Key: {self.key}, Value: {self.value}")    
+
 class HashTable:
     '''
     A hash table that with `capacity` buckets
@@ -6,6 +18,9 @@ class HashTable:
     def __init__(self, capacity):
         self.capacity = capacity  # Number of buckets in the hash table
         self.storage = [None] * capacity
+        
+  
+            
 
 
     def _hash(self, key):
@@ -13,7 +28,6 @@ class HashTable:
         Hash an arbitrary key and return an integer.
         You may replace the Python hash with DJB2 as a stretch goal.
         '''
-        return hashlib.sha256(key.encode())
         return hash(key)
 
 
@@ -36,30 +50,42 @@ class HashTable:
     def insert(self, key, value):
         '''
         Store the value with the given key.
-        # Part 1: Hash collisions should be handled with an error warning. (Think about and
-        # investigate the impact this will have on the tests)
-        # Part 2: Change this so that hash collisions are handled with Linked List Chaining.
+        Hash collisions should be handled with Linked List Chaining.
         Fill this in.
         '''
-        index = self._hash_mod(key)
+      
+        index = self._hash_mod(key) # index = number within storage range
+        
         if self.storage[index] is not None:
-            print("ERROR: Key in use") 
-        else: 
-            self.storage[key] = value
-
-
+            print('Warning: Its Full')
+            current_node = self.storage[index]
+            while current_node.next:
+                if current_node.key == key:
+                    current_node.value = value
+                    break
+                elif current_node.next.next == None:
+                    current_node.next.next = LinkedPair(key, value)
+                    break
+                current_node = current_node.next
+        else:
+            self.storage[index] = LinkedPair(key,value)       
+            
+           
+ 
     def remove(self, key):
         '''
         Remove the value stored with the given key.
         Print a warning if the key is not found.
         Fill this in.
         '''
+        # hash the key, get the index
+        # use the original key with linked list to delete the node
         index = self._hash_mod(key)
+        
         if self.storage[index] is not None:
             self.storage[index] = None
         else:
-            print("WARNING: Key not found")
-
+            print('Warning: Key not found')    
 
     def retrieve(self, key):
         '''
@@ -67,9 +93,28 @@ class HashTable:
         Returns None if the key is not found.
         Fill this in.
         '''
-        index = self._hash_mod(key)
-
+        # try:
+        #     retrieved = self.storage[self._hash_mod(key)]
+        #     return retrieved 
+        # except:
+        #     return None
         
+        
+        ###3
+        index = self._hash_mod(key)
+        if self.storage[index] == None:
+            return None
+        else:
+            current_node = self.storage[index]
+            while current_node:
+                if current_node.key == key:
+                    return current_node.value
+                current_node = current_node.next
+        
+        return self.storage[index]
+            
+                
+            
 
 
     def resize(self):
@@ -84,6 +129,11 @@ class HashTable:
         for item in prev:
             self.insert(item.key, item.value)
 
+
+        
+
+
+
 if __name__ == "__main__":
     ht = HashTable(2)
 
@@ -91,7 +141,7 @@ if __name__ == "__main__":
     ht.insert("line_2", "Filled beyond capacity")
     ht.insert("line_3", "Linked list saves the day!")
 
-    print("")
+    print(ht.storage,"storageeeeeee")
 
     # Test storing beyond capacity
     print(ht.retrieve("line_1"))
@@ -111,3 +161,4 @@ if __name__ == "__main__":
     print(ht.retrieve("line_3"))
 
     print("")
+    
